@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "proyectoimt3810"
+version = "0.1.0"
+description = ""
+authors = ["Danielggonzalez177 <daniel.gomez@uc.cl>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+numpy = "^1.26.2"
+jupyter = "^1.0.0"
+pandas = "^2.1.3"
+black = "^23.11.0"
+isort = "^5.12.0"
+flake8 = "^6.1.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
