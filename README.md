@@ -18,8 +18,10 @@ Adicionalmente, es necesario tener la aplicación de Gmsh en el ```PATH``` de nu
   - Ingresar 'editar las variables de entorno' en el buscador de Windows.
   - Clickear en 'Variables de entorno...'
   - Bajo el cuadro de 'Variables del sistema', clickear 'Path' y editar.
-  - Agregar nueva variable de entorno y pegar el path de Gmsh. Por ejemplo: ```X:\gmsh-4.11.1-Windows64```.
+  - Agregar nueva variable de entorno y pegar el path de Gmsh. Por ejemplo: ```C:\gmsh-4.11.1-Windows64```.
   - Aceptar todos los cambios.
   - Finalmente, reiniciar el PC para que los cambios hagan efecto.
 
 En VS Code se debe elegir el kernel asociado al entorno virtual ```.venv``` para ejecutar los códigos.
+
+Para probar que el entorno virtual está funcionando bien, se puede correr el ejemplo del archivo ```BEM_Test.ipynb```, el que corresponde a un notebook de ejemplo de la librería Bempp-cl.
