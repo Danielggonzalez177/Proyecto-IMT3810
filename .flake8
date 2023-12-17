@@ -6,9 +6,10 @@ exclude =
   .venv
 indent-size = 4
 files =
-  src/,
+  utils/,bempp/
 max-doc-length = 90
 max-line-length = 100
 per-file-ignores =
   # imported but unused
   __init__.py: F401
+ignore = E203,W503 ; Ignorar ':' con espacios a ambos lados y los cortes de líneas
