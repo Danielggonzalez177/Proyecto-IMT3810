@@ -10,6 +10,7 @@ def single_layer(
     assembler="default_nonlocal",
     device_interface=None,
     precision=None,
+    opt_layer=None,
 ):
     """Assemble the Laplace single-layer boundary operator."""
     return _common.create_operator(
@@ -25,6 +26,7 @@ def single_layer(
         device_interface,
         precision,
         False,
+        opt_layer,
     )
 
 

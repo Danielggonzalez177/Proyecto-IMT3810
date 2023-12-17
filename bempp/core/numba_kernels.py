@@ -190,21 +190,28 @@ def elements_adjacent(elements, index1, index2):
     nopython=True, parallel=False, error_model="numpy", fastmath=True, boundscheck=False
 )
 def laplace_single_layer_regular(
-    test_point, trial_points, test_normal, trial_normals, kernel_parameters, opt_layer=0
+    test_point,
+    trial_points,
+    test_normal,
+    trial_normals,
+    kernel_parameters,
+    opt_layer=None,
 ):
-    # """Evaluate Laplace single layer for regular kernels."""
-    # npoints = trial_points.shape[1]
-    # dtype = trial_points.dtype
-    # output = _np.zeros(npoints, dtype=dtype)
-    # m_inv_4pi = dtype.type(M_INV_4PI)
-    # for i in range(3):
-    #     for j in range(npoints):
-    #         output[j] += (trial_points[i, j] - test_point[i]) ** 2
-    # for j in range(npoints):
-    #     output[j] = m_inv_4pi / _np.sqrt(output[j])
-    # return output
+    if not opt_layer:
+        """Evaluate Laplace single layer for regular kernels."""
+        npoints = trial_points.shape[1]
+        dtype = trial_points.dtype
+        output = _np.zeros(npoints, dtype=dtype)
+        m_inv_4pi = dtype.type(M_INV_4PI)
+        for i in range(3):
+            for j in range(npoints):
+                output[j] += (trial_points[i, j] - test_point[i]) ** 2
+        for j in range(npoints):
+            output[j] = m_inv_4pi / _np.sqrt(output[j])
+        return output
 
-    # """Evaluate Stoke single layer (by coordinates) for regular kernels.""" TODO:
+    """Evaluate Stokes single layer for regular kernels.
+    (with Green's functions E by coordinates [opt 0->8] and Q [opt 9])"""  # TODO:
     npoints = trial_points.shape[1]
     dtype = trial_points.dtype
     output = _np.zeros(npoints, dtype=dtype)  # Duda con el dtype
@@ -215,6 +222,7 @@ def laplace_single_layer_regular(
             r[j] += (trial_points[i, j] - test_point[i]) ** 2
     for j in range(npoints):
         r[j] = _np.sqrt(r[j])
+
     if opt_layer == 0 or opt_layer == 3 or opt_layer == 6:
         for j in range(npoints):
             aux = int(opt_layer / 3)
@@ -270,7 +278,12 @@ def laplace_single_layer_regular(
     nopython=True, parallel=False, error_model="numpy", fastmath=True, boundscheck=False
 )
 def laplace_double_layer_regular(
-    test_point, trial_points, test_normal, trial_normals, kernel_parameters
+    test_point,
+    trial_points,
+    test_normal,
+    trial_normals,
+    kernel_parameters,
+    opt_layer=None,
 ):
     """Evaluate Laplace double layer for regular kernels."""
     npoints = trial_points.shape[1]
@@ -297,7 +310,12 @@ def laplace_double_layer_regular(
     nopython=True, parallel=False, error_model="numpy", fastmath=True, boundscheck=False
 )
 def laplace_adjoint_double_layer_regular(
-    test_point, trial_points, test_normal, trial_normals, kernel_parameters
+    test_point,
+    trial_points,
+    test_normal,
+    trial_normals,
+    kernel_parameters,
+    opt_layer=None,
 ):
     """Evaluate Laplace adjoint double layer for regular kernels."""
     npoints = trial_points.shape[1]
@@ -324,7 +342,12 @@ def laplace_adjoint_double_layer_regular(
     nopython=True, parallel=False, error_model="numpy", fastmath=True, boundscheck=False
 )
 def laplace_single_layer_singular(
-    test_points, trial_points, test_normal, trial_normal, kernel_parameters
+    test_points,
+    trial_points,
+    test_normal,
+    trial_normal,
+    kernel_parameters,
+    opt_layer=None,
 ):
     """Evaluate Laplace single layer for singular kernels."""
     npoints = trial_points.shape[1]
@@ -343,7 +366,12 @@ def laplace_single_layer_singular(
     nopython=True, parallel=False, error_model="numpy", fastmath=True, boundscheck=False
 )
 def laplace_double_layer_singular(
-    test_points, trial_points, test_normal, trial_normal, kernel_parameters
+    test_points,
+    trial_points,
+    test_normal,
+    trial_normal,
+    kernel_parameters,
+    opt_layer=None,
 ):
     """Evaluate Laplace double layer for singular kernels."""
     npoints = trial_points.shape[1]
@@ -370,7 +398,12 @@ def laplace_double_layer_singular(
     nopython=True, parallel=False, error_model="numpy", fastmath=True, boundscheck=False
 )
 def laplace_adjoint_double_layer_singular(
-    test_points, trial_points, test_normal, trial_normal, kernel_parameters
+    test_points,
+    trial_points,
+    test_normal,
+    trial_normal,
+    kernel_parameters,
+    opt_layer=None,
 ):
     """Evaluate Laplace adjoint double layer for singular kernels."""
     npoints = trial_points.shape[1]
@@ -397,7 +430,12 @@ def laplace_adjoint_double_layer_singular(
     nopython=True, parallel=False, error_model="numpy", fastmath=True, boundscheck=False
 )
 def helmholtz_single_layer_regular(
-    test_point, trial_points, test_normal, trial_normals, kernel_parameters
+    test_point,
+    trial_points,
+    test_normal,
+    trial_normals,
+    kernel_parameters,
+    opt_layer=None,
 ):
     """Evaluate Helmholtz single layer for regular kernels."""
     wavenumber_real = kernel_parameters[0]
@@ -427,7 +465,12 @@ def helmholtz_single_layer_regular(
     nopython=True, parallel=False, error_model="numpy", fastmath=True, boundscheck=False
 )
 def helmholtz_double_layer_regular(
-    test_point, trial_points, test_normal, trial_normals, kernel_parameters
+    test_point,
+    trial_points,
+    test_normal,
+    trial_normals,
+    kernel_parameters,
+    opt_layer=None,
 ):
     """Evaluate Helmholtz double layer for regular kernels."""
     wavenumber_real = kernel_parameters[0]
@@ -474,7 +517,12 @@ def helmholtz_double_layer_regular(
     nopython=True, parallel=False, error_model="numpy", fastmath=True, boundscheck=False
 )
 def helmholtz_adjoint_double_layer_regular(
-    test_point, trial_points, test_normal, trial_normals, kernel_parameters
+    test_point,
+    trial_points,
+    test_normal,
+    trial_normals,
+    kernel_parameters,
+    opt_layer=None,
 ):
     """Evaluate Helmholtz adjoint double layer for regular kernels."""
     wavenumber_real = kernel_parameters[0]
@@ -521,7 +569,12 @@ def helmholtz_adjoint_double_layer_regular(
     nopython=True, parallel=False, error_model="numpy", fastmath=True, boundscheck=False
 )
 def helmholtz_far_field_single_layer(
-    test_point, trial_points, test_normal, trial_normals, kernel_parameters
+    test_point,
+    trial_points,
+    test_normal,
+    trial_normals,
+    kernel_parameters,
+    opt_layer=None,
 ):
     """Evaluate Helmholtz single layer for regular kernels."""
     npoints = trial_points.shape[1]
@@ -548,7 +601,12 @@ def helmholtz_far_field_single_layer(
     nopython=True, parallel=False, error_model="numpy", fastmath=True, boundscheck=False
 )
 def helmholtz_far_field_double_layer(
-    test_point, trial_points, test_normal, trial_normals, kernel_parameters
+    test_point,
+    trial_points,
+    test_normal,
+    trial_normals,
+    kernel_parameters,
+    opt_layer=None,
 ):
     """Evaluate Helmholtz single layer for regular kernels."""
     npoints = trial_points.shape[1]
@@ -586,7 +644,12 @@ def helmholtz_far_field_double_layer(
     nopython=True, parallel=False, error_model="numpy", fastmath=True, boundscheck=False
 )
 def helmholtz_single_layer_singular(
-    test_points, trial_points, test_normal, trial_normal, kernel_parameters
+    test_points,
+    trial_points,
+    test_normal,
+    trial_normal,
+    kernel_parameters,
+    opt_layer=None,
 ):
     """Evaluate Helmholtz single layer for regular kernels."""
     wavenumber_real = kernel_parameters[0]
@@ -616,7 +679,12 @@ def helmholtz_single_layer_singular(
     nopython=True, parallel=False, error_model="numpy", fastmath=True, boundscheck=False
 )
 def helmholtz_double_layer_singular(
-    test_points, trial_points, test_normal, trial_normal, kernel_parameters
+    test_points,
+    trial_points,
+    test_normal,
+    trial_normal,
+    kernel_parameters,
+    opt_layer=None,
 ):
     """Evaluate Helmholtz double layer for singular kernels."""
     wavenumber_real = kernel_parameters[0]
@@ -662,7 +730,12 @@ def helmholtz_double_layer_singular(
     nopython=True, parallel=False, error_model="numpy", fastmath=True, boundscheck=False
 )
 def helmholtz_adjoint_double_layer_singular(
-    test_points, trial_points, test_normal, trial_normal, kernel_parameters
+    test_points,
+    trial_points,
+    test_normal,
+    trial_normal,
+    kernel_parameters,
+    opt_layer=None,
 ):
     """Evaluate Helmholtz adjoint double layer for singular kernels."""
     wavenumber_real = kernel_parameters[0]
@@ -708,7 +781,12 @@ def helmholtz_adjoint_double_layer_singular(
     nopython=True, parallel=False, error_model="numpy", fastmath=True, boundscheck=False
 )
 def modified_helmholtz_single_layer_regular(
-    test_points, trial_points, test_normal, trial_normal, kernel_parameters
+    test_points,
+    trial_points,
+    test_normal,
+    trial_normal,
+    kernel_parameters,
+    opt_layer=None,
 ):
     """Evaluate Modified Helmholtz single layer for regular kernels."""
     npoints = trial_points.shape[1]
@@ -733,7 +811,12 @@ def modified_helmholtz_single_layer_regular(
     nopython=True, parallel=False, error_model="numpy", fastmath=True, boundscheck=False
 )
 def modified_helmholtz_single_layer_singular(
-    test_points, trial_points, test_normal, trial_normal, kernel_parameters
+    test_points,
+    trial_points,
+    test_normal,
+    trial_normal,
+    kernel_parameters,
+    opt_layer=None,
 ):
     """Evaluate Modified Helmholtz single layer for singular kernels."""
     npoints = trial_points.shape[1]
@@ -758,7 +841,12 @@ def modified_helmholtz_single_layer_singular(
     nopython=True, parallel=False, error_model="numpy", fastmath=True, boundscheck=False
 )
 def modified_helmholtz_double_layer_regular(
-    test_points, trial_points, test_normal, trial_normal, kernel_parameters
+    test_points,
+    trial_points,
+    test_normal,
+    trial_normal,
+    kernel_parameters,
+    opt_layer=None,
 ):
     """Evaluate Modified Helmholtz double layer for regular kernels."""
     npoints = trial_points.shape[1]
@@ -795,7 +883,12 @@ def modified_helmholtz_double_layer_regular(
     nopython=True, parallel=False, error_model="numpy", fastmath=True, boundscheck=False
 )
 def modified_helmholtz_double_layer_singular(
-    test_points, trial_points, test_normal, trial_normal, kernel_parameters
+    test_points,
+    trial_points,
+    test_normal,
+    trial_normal,
+    kernel_parameters,
+    opt_layer=None,
 ):
     """Evaluate Modified Helmholtz double layer for singular kernels."""
     npoints = trial_points.shape[1]
@@ -832,7 +925,12 @@ def modified_helmholtz_double_layer_singular(
     nopython=True, parallel=False, error_model="numpy", fastmath=True, boundscheck=False
 )
 def modified_helmholtz_adjoint_double_layer_regular(
-    test_points, trial_points, test_normal, trial_normal, kernel_parameters
+    test_points,
+    trial_points,
+    test_normal,
+    trial_normal,
+    kernel_parameters,
+    opt_layer=None,
 ):
     """Evaluate Modified Helmholtz adjoint double layer for regular kernels."""
     npoints = trial_points.shape[1]
@@ -869,7 +967,12 @@ def modified_helmholtz_adjoint_double_layer_regular(
     nopython=True, parallel=False, error_model="numpy", fastmath=True, boundscheck=False
 )
 def modified_helmholtz_adjoint_double_layer_singular(
-    test_points, trial_points, test_normal, trial_normal, kernel_parameters
+    test_points,
+    trial_points,
+    test_normal,
+    trial_normal,
+    kernel_parameters,
+    opt_layer=None,
 ):
     """Evaluate Modified Helmholtz adjoint double layer for singular kernels."""
     npoints = trial_points.shape[1]
@@ -922,6 +1025,7 @@ def l2_identity_kernel(
     test_basis_evaluate,
     trial_basis_evaluate,
     result,
+    opt_layer=None,
 ):
     """Evaluate kernel for L2 identity."""
     element = elements[element_index]
@@ -982,6 +1086,7 @@ def _vector_grad_product_kernel(
     test_basis_evaluate,
     trial_basis_gradient,
     result,
+    opt_layer=None,
 ):
     element = elements[element_index]
     local_test_fun_values = test_basis_evaluate(
@@ -1044,6 +1149,7 @@ def _curl_curl_product_kernel(
     test_basis_curl,
     trial_basis_curl,
     result,
+    opt_layer=None,
 ):
     """Evaluate kernel for L2 identity."""
     element = elements[element_index]
@@ -1102,6 +1208,7 @@ def laplace_beltrami_kernel(
     test_basis_gradient,
     trial_basis_gradient,
     result,
+    opt_layer=None,
 ):
     """Evaluate kernel for Laplace-Beltrami."""
 
@@ -1221,7 +1328,7 @@ def default_scalar_regular_kernel(
     test_shapeset,
     trial_shapeset,
     result,
-    opt_layer=0,
+    opt_layer=None,
 ):
     """Evaulate default scalar kernel."""
     # Compute global points
@@ -2277,7 +2384,7 @@ def default_scalar_potential_kernel(
     kernel_parameters,
     normal_multipliers,
     support_elements,
-    opt_layer=0,
+    opt_layer=None,
 ):
     """Implement a scalar potential kernel."""
     result = _np.zeros((kernel_dimension, points.shape[1]), dtype=result_type)

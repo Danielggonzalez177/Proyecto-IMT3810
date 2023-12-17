@@ -19,6 +19,7 @@ def create_operator(
     device_interface,
     precision,
     is_complex,
+    opt_layer=None,
 ):
     """Create a generic operator."""
     from bempp.api.operators import OperatorDescriptor
@@ -61,6 +62,7 @@ def create_operator(
         is_complex,
         singular_part,
         kernel_dimension,
+        opt_layer,
     )
     return _boundary_operator.BoundaryOperatorWithAssembler(
         domain, range_, dual_to_range, assembler, descriptor

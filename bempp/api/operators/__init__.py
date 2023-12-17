@@ -10,7 +10,8 @@ from . import far_field
 
 OperatorDescriptor = _collections.namedtuple(
     "OperatorDescriptor",
-    "identifier options kernel_type assembly_type precision is_complex singular_part kernel_dimension",
+    "identifier options kernel_type assembly_type precision is_complex singular_part kernel_dimension opt_layer",
+    defaults=(None,),
 )
 
 MultitraceOperatorDescriptor = _collections.namedtuple(

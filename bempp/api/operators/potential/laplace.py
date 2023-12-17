@@ -8,6 +8,7 @@ def single_layer(
     assembler="dense",
     device_interface=None,
     precision=None,
+    opt_layer=None,
 ):
     """Return a Laplace single-layer potential operator."""
     import bempp.api
@@ -27,6 +28,7 @@ def single_layer(
         False,  # Is complex
         None,  # Singular part
         1,  # Kernel dimension
+        opt_layer,
     )
 
     return PotentialOperator(

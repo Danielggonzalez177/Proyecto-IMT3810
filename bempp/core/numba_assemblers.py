@@ -1,10 +1,6 @@
 """Actual implementation of Numba assemblers."""
 import numpy as _np
 
-# TODO:
-OPT_LAYER_DENSE = 0
-OPT_LAYER_POTENTIAL = 0
-
 
 def singular_assembler(
     device_interface,
@@ -95,37 +91,63 @@ def dense_assembler(
     grids_identical = domain.grid == dual_to_range.grid
 
     # TODO:
-    global OPT_LAYER_DENSE
-    print(OPT_LAYER_DENSE)
+    # print(operator_descriptor.opt_layer)
     for test_color_index in range(number_of_test_colors):
-        numba_assembly_function_regular(
-            dual_to_range.grid.data(precision),
-            domain.grid.data(precision),
-            nshape_test,
-            nshape_trial,
-            test_indices[
-                test_color_indexptr[test_color_index] : test_color_indexptr[
-                    1 + test_color_index
-                ]
-            ],
-            trial_indices,
-            dual_to_range.local_multipliers.astype(data_type),
-            domain.local_multipliers.astype(data_type),
-            dual_to_range.local2global,
-            domain.local2global,
-            dual_to_range.normal_multipliers,
-            domain.normal_multipliers,
-            quad_points.astype(data_type),
-            quad_weights.astype(data_type),
-            numba_kernel_function_regular,
-            _np.array(operator_descriptor.options, dtype=data_type),
-            grids_identical,
-            dual_to_range.shapeset.evaluate,
-            domain.shapeset.evaluate,
-            result,
-            OPT_LAYER_DENSE,
-        )
-    OPT_LAYER_DENSE += 1
+        if not operator_descriptor.opt_layer:
+            numba_assembly_function_regular(
+                dual_to_range.grid.data(precision),
+                domain.grid.data(precision),
+                nshape_test,
+                nshape_trial,
+                test_indices[
+                    test_color_indexptr[test_color_index] : test_color_indexptr[
+                        1 + test_color_index
+                    ]
+                ],
+                trial_indices,
+                dual_to_range.local_multipliers.astype(data_type),
+                domain.local_multipliers.astype(data_type),
+                dual_to_range.local2global,
+                domain.local2global,
+                dual_to_range.normal_multipliers,
+                domain.normal_multipliers,
+                quad_points.astype(data_type),
+                quad_weights.astype(data_type),
+                numba_kernel_function_regular,
+                _np.array(operator_descriptor.options, dtype=data_type),
+                grids_identical,
+                dual_to_range.shapeset.evaluate,
+                domain.shapeset.evaluate,
+                result,
+            )
+        else:
+            numba_assembly_function_regular(
+                dual_to_range.grid.data(precision),
+                domain.grid.data(precision),
+                nshape_test,
+                nshape_trial,
+                test_indices[
+                    test_color_indexptr[test_color_index] : test_color_indexptr[
+                        1 + test_color_index
+                    ]
+                ],
+                trial_indices,
+                dual_to_range.local_multipliers.astype(data_type),
+                domain.local_multipliers.astype(data_type),
+                dual_to_range.local2global,
+                domain.local2global,
+                dual_to_range.normal_multipliers,
+                domain.normal_multipliers,
+                quad_points.astype(data_type),
+                quad_weights.astype(data_type),
+                numba_kernel_function_regular,
+                _np.array(operator_descriptor.options, dtype=data_type),
+                grids_identical,
+                dual_to_range.shapeset.evaluate,
+                domain.shapeset.evaluate,
+                result,
+                operator_descriptor.opt_layer,
+            )
 
 
 def potential_assembler(
@@ -163,26 +185,41 @@ def potential_assembler(
     def evaluator(x):
         """Actually evaluate the potential."""
         # TODO:
-        global OPT_LAYER_POTENTIAL
-        n_layer = OPT_LAYER_POTENTIAL
-        print(OPT_LAYER_POTENTIAL)
-        OPT_LAYER_POTENTIAL += 1
-        return numba_assembly_function(
-            dtype,
-            result_type,
-            kernel_dimension,
-            points_transformed,
-            x.astype(result_type),
-            grid_data,
-            quad_points.astype(precision),
-            quad_weights.astype(precision),
-            space.number_of_shape_functions,
-            space.shapeset.evaluate,
-            numba_kernel_function_regular,
-            kernel_parameters,
-            space.normal_multipliers,
-            space.support_elements,
-            n_layer,
-        )
+        # print(operator_descriptor.opt_layer)
+        if not operator_descriptor.opt_layer:
+            return numba_assembly_function(
+                dtype,
+                result_type,
+                kernel_dimension,
+                points_transformed,
+                x.astype(result_type),
+                grid_data,
+                quad_points.astype(precision),
+                quad_weights.astype(precision),
+                space.number_of_shape_functions,
+                space.shapeset.evaluate,
+                numba_kernel_function_regular,
+                kernel_parameters,
+                space.normal_multipliers,
+                space.support_elements,
+            )
+        else:
+            return numba_assembly_function(
+                dtype,
+                result_type,
+                kernel_dimension,
+                points_transformed,
+                x.astype(result_type),
+                grid_data,
+                quad_points.astype(precision),
+                quad_weights.astype(precision),
+                space.number_of_shape_functions,
+                space.shapeset.evaluate,
+                numba_kernel_function_regular,
+                kernel_parameters,
+                space.normal_multipliers,
+                space.support_elements,
+                operator_descriptor.opt_layer,
+            )
 
     return evaluator
