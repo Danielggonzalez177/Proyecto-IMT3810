@@ -224,10 +224,11 @@ def stokes_single_layer_regular(
     opt_layer=None,
 ):
     """Evaluate Stokes single layer for regular kernels.
-    (with Green's functions E by coordinates [opt 0->8] and Q [opt 9])"""  # TODO:
+    (with Green's functions E by coordinates [opt 0->8] and Q [opt 9->11])"""  # TODO:
     npoints = trial_points.shape[1]
     dtype = trial_points.dtype
-    output = _np.zeros(npoints, dtype=dtype)  # Duda con el dtype
+    output = _np.zeros(npoints, dtype=dtype)
+    m_inv_4pi = dtype.type(M_INV_4PI)
     m_inv_8pi = dtype.type(M_INV_4PI / 2)
     r = _np.zeros(npoints, dtype=dtype)
     for i in range(3):
@@ -236,6 +237,7 @@ def stokes_single_layer_regular(
     for j in range(npoints):
         r[j] = _np.sqrt(r[j])
 
+    # E(x,y) options:
     if opt_layer == 0 or opt_layer == 3 or opt_layer == 6:
         for j in range(npoints):
             aux = int(opt_layer / 3)
@@ -284,6 +286,17 @@ def stokes_single_layer_regular(
                 * (trial_points[1, j] - test_point[1])
                 / r[j] ** 3
             )
+
+    # Q(x,y) options:
+    elif opt_layer == 9:
+        for j in range(npoints):
+            output[j] = m_inv_4pi / r[j] / (trial_points[0, j] - test_point[0])
+    elif opt_layer == 10:
+        for j in range(npoints):
+            output[j] = m_inv_4pi / r[j] / (trial_points[1, j] - test_point[1])
+    elif opt_layer == 11:
+        for j in range(npoints):
+            output[j] = m_inv_4pi / r[j] / (trial_points[2, j] - test_point[2])
     return output
 
 
@@ -299,10 +312,11 @@ def stokes_single_layer_singular(
     opt_layer=None,
 ):
     """Evaluate Stokes single layer for singular kernels.
-    (with Green's functions E by coordinates [opt 0->8] and Q [opt 9])"""  # TODO:
+    (with Green's functions E by coordinates [opt 0->8] and Q [opt 9->11])"""  # TODO:
     npoints = trial_points.shape[1]
     dtype = trial_points.dtype
-    output = _np.zeros(npoints, dtype=dtype)  # Duda con el dtype
+    output = _np.zeros(npoints, dtype=dtype)
+    m_inv_4pi = dtype.type(M_INV_4PI)
     m_inv_8pi = dtype.type(M_INV_4PI / 2)
     r = _np.zeros(npoints, dtype=dtype)
     for i in range(3):
@@ -311,6 +325,7 @@ def stokes_single_layer_singular(
     for j in range(npoints):
         r[j] = _np.sqrt(r[j])
 
+    # E(x,y) options:
     if opt_layer == 0 or opt_layer == 3 or opt_layer == 6:
         for j in range(npoints):
             aux = int(opt_layer / 3)
@@ -360,6 +375,17 @@ def stokes_single_layer_singular(
                 * (trial_points[1, j] - test_point[1, j])
                 / r[j] ** 3
             )
+
+    # Q(x,y) options:
+    elif opt_layer == 9:
+        for j in range(npoints):
+            output[j] = m_inv_4pi / r[j] / (trial_points[0, j] - test_point[0, j])
+    elif opt_layer == 10:
+        for j in range(npoints):
+            output[j] = m_inv_4pi / r[j] / (trial_points[1, j] - test_point[1, j])
+    elif opt_layer == 11:
+        for j in range(npoints):
+            output[j] = m_inv_4pi / r[j] / (trial_points[2, j] - test_point[2, j])
     return output
 
 
