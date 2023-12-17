@@ -39,6 +39,7 @@ def select_numba_kernels(operator_descriptor, mode="regular"):
         "laplace_single_layer": laplace_single_layer_regular,
         "laplace_double_layer": laplace_double_layer_regular,
         "laplace_adjoint_double_layer": laplace_adjoint_double_layer_regular,
+        "stokes_single_layer": stokes_single_layer_regular,
         "helmholtz_single_layer": helmholtz_single_layer_regular,
         "helmholtz_double_layer": helmholtz_double_layer_regular,
         "helmholtz_far_field_single_layer": helmholtz_far_field_single_layer,
@@ -53,6 +54,7 @@ def select_numba_kernels(operator_descriptor, mode="regular"):
         "laplace_single_layer": laplace_single_layer_singular,
         "laplace_double_layer": laplace_double_layer_singular,
         "laplace_adjoint_double_layer": laplace_adjoint_double_layer_singular,
+        "stokes_single_layer": stokes_single_layer_singular,
         "helmholtz_single_layer": helmholtz_single_layer_singular,
         "helmholtz_double_layer": helmholtz_double_layer_singular,
         "helmholtz_adjoint_double_layer": helmholtz_adjoint_double_layer_singular,
@@ -197,19 +199,30 @@ def laplace_single_layer_regular(
     kernel_parameters,
     opt_layer=None,
 ):
-    if not opt_layer:
-        """Evaluate Laplace single layer for regular kernels."""
-        npoints = trial_points.shape[1]
-        dtype = trial_points.dtype
-        output = _np.zeros(npoints, dtype=dtype)
-        m_inv_4pi = dtype.type(M_INV_4PI)
-        for i in range(3):
-            for j in range(npoints):
-                output[j] += (trial_points[i, j] - test_point[i]) ** 2
+    """Evaluate Laplace single layer for regular kernels."""
+    npoints = trial_points.shape[1]
+    dtype = trial_points.dtype
+    output = _np.zeros(npoints, dtype=dtype)
+    m_inv_4pi = dtype.type(M_INV_4PI)
+    for i in range(3):
         for j in range(npoints):
-            output[j] = m_inv_4pi / _np.sqrt(output[j])
-        return output
+            output[j] += (trial_points[i, j] - test_point[i]) ** 2
+    for j in range(npoints):
+        output[j] = m_inv_4pi / _np.sqrt(output[j])
+    return output
 
+
+@_numba.jit(
+    nopython=True, parallel=False, error_model="numpy", fastmath=True, boundscheck=False
+)
+def stokes_single_layer_regular(
+    test_point,
+    trial_points,
+    test_normal,
+    trial_normals,
+    kernel_parameters,
+    opt_layer=None,
+):
     """Evaluate Stokes single layer for regular kernels.
     (with Green's functions E by coordinates [opt 0->8] and Q [opt 9])"""  # TODO:
     npoints = trial_points.shape[1]
@@ -269,6 +282,82 @@ def laplace_single_layer_regular(
             output[j] = m_inv_8pi * (
                 (trial_points[2, j] - test_point[2])
                 * (trial_points[1, j] - test_point[1])
+                / r[j] ** 3
+            )
+    return output
+
+
+@_numba.jit(
+    nopython=True, parallel=False, error_model="numpy", fastmath=True, boundscheck=False
+)
+def stokes_single_layer_singular(
+    test_point,
+    trial_points,
+    test_normal,
+    trial_normals,
+    kernel_parameters,
+    opt_layer=None,
+):
+    """Evaluate Stokes single layer for singular kernels.
+    (with Green's functions E by coordinates [opt 0->8] and Q [opt 9])"""  # TODO:
+    npoints = trial_points.shape[1]
+    dtype = trial_points.dtype
+    output = _np.zeros(npoints, dtype=dtype)  # Duda con el dtype
+    m_inv_8pi = dtype.type(M_INV_4PI / 2)
+    r = _np.zeros(npoints, dtype=dtype)
+    for i in range(3):
+        for j in range(npoints):
+            r[j] += (trial_points[i, j] - test_point[i, j]) ** 2
+    for j in range(npoints):
+        r[j] = _np.sqrt(r[j])
+
+    if opt_layer == 0 or opt_layer == 3 or opt_layer == 6:
+        for j in range(npoints):
+            aux = int(opt_layer / 3)
+            output[j] = m_inv_8pi * (
+                1.0 / r[j]
+                + (trial_points[aux, j] - test_point[aux, j]) ** 2 / r[j] ** 3
+            )
+    elif opt_layer == 1:
+        for j in range(npoints):
+            output[j] = m_inv_8pi * (
+                (trial_points[0, j] - test_point[0, j])
+                * (trial_points[1, j] - test_point[1, j])
+                / r[j] ** 3
+            )
+    elif opt_layer == 2:
+        for j in range(npoints):
+            output[j] = m_inv_8pi * (
+                (trial_points[0, j] - test_point[0, j])
+                * (trial_points[2, j] - test_point[2, j])
+                / r[j] ** 3
+            )
+    elif opt_layer == 4:
+        for j in range(npoints):
+            output[j] = m_inv_8pi * (
+                (trial_points[1, j] - test_point[1, j])
+                * (trial_points[0, j] - test_point[0, j])
+                / r[j] ** 3
+            )
+    elif opt_layer == 5:
+        for j in range(npoints):
+            output[j] = m_inv_8pi * (
+                (trial_points[1, j] - test_point[1, j])
+                * (trial_points[2, j] - test_point[2, j])
+                / r[j] ** 3
+            )
+    elif opt_layer == 7:
+        for j in range(npoints):
+            output[j] = m_inv_8pi * (
+                (trial_points[2, j] - test_point[2, j])
+                * (trial_points[0, j] - test_point[0, j])
+                / r[j] ** 3
+            )
+    elif opt_layer == 8:
+        for j in range(npoints):
+            output[j] = m_inv_8pi * (
+                (trial_points[2, j] - test_point[2, j])
+                * (trial_points[1, j] - test_point[1, j])
                 / r[j] ** 3
             )
     return output
@@ -1980,6 +2069,7 @@ def default_scalar_singular_kernel(
     kernel_evaluator,
     kernel_parameters,
     result,
+    opt_layer=None,
 ):
     """Evaluate singular kernel."""
     nelements = len(test_elements)
@@ -2001,12 +2091,14 @@ def default_scalar_singular_kernel(
         trial_fun_values = trial_shapeset(
             trial_points[:, trial_offset : trial_offset + npoints]
         )
+        # TODO:
         kernel_values = kernel_evaluator(
             test_global_points,
             trial_global_points,
             grid_data.normals[test_element] * test_normal_multipliers[test_element],
             grid_data.normals[trial_element] * trial_normal_multipliers[trial_element],
             kernel_parameters,
+            opt_layer,
         )
         for test_fun_index in range(nshape_test):
             for trial_fun_index in range(nshape_trial):

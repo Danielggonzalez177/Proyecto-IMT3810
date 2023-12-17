@@ -33,27 +33,53 @@ def singular_assembler(
     precision = "double"
     dtype = get_type(precision).real
 
-    numba_assembly_function(
-        grid.data(precision),
-        test_points,
-        trial_points,
-        quad_weights,
-        test_elements,
-        trial_elements,
-        test_offsets,
-        trial_offsets,
-        weights_offsets,
-        number_of_quad_points,
-        dual_to_range.normal_multipliers,
-        domain.normal_multipliers,
-        dual_to_range.number_of_shape_functions,
-        domain.number_of_shape_functions,
-        dual_to_range.shapeset.evaluate,
-        domain.shapeset.evaluate,
-        numba_kernel_function,
-        _np.array(kernel_options, dtype=dtype),
-        result,
-    )
+    # TODO:
+    # print(operator_descriptor.opt_layer)
+    if not operator_descriptor.opt_layer:
+        numba_assembly_function(
+            grid.data(precision),
+            test_points,
+            trial_points,
+            quad_weights,
+            test_elements,
+            trial_elements,
+            test_offsets,
+            trial_offsets,
+            weights_offsets,
+            number_of_quad_points,
+            dual_to_range.normal_multipliers,
+            domain.normal_multipliers,
+            dual_to_range.number_of_shape_functions,
+            domain.number_of_shape_functions,
+            dual_to_range.shapeset.evaluate,
+            domain.shapeset.evaluate,
+            numba_kernel_function,
+            _np.array(kernel_options, dtype=dtype),
+            result,
+        )
+    else:
+        numba_assembly_function(
+            grid.data(precision),
+            test_points,
+            trial_points,
+            quad_weights,
+            test_elements,
+            trial_elements,
+            test_offsets,
+            trial_offsets,
+            weights_offsets,
+            number_of_quad_points,
+            dual_to_range.normal_multipliers,
+            domain.normal_multipliers,
+            dual_to_range.number_of_shape_functions,
+            domain.number_of_shape_functions,
+            dual_to_range.shapeset.evaluate,
+            domain.shapeset.evaluate,
+            numba_kernel_function,
+            _np.array(kernel_options, dtype=dtype),
+            result,
+            operator_descriptor.opt_layer,
+        )
 
 
 def dense_assembler(
