@@ -290,13 +290,13 @@ def stokes_single_layer_regular(
     # Q(x,y) options:
     elif opt_layer == 9:
         for j in range(npoints):
-            output[j] = m_inv_4pi / r[j] / (trial_points[0, j] - test_point[0])
+            output[j] = m_inv_4pi * (trial_points[0, j] - test_point[0]) / r[j] ** 3
     elif opt_layer == 10:
         for j in range(npoints):
-            output[j] = m_inv_4pi / r[j] / (trial_points[1, j] - test_point[1])
+            output[j] = m_inv_4pi * (trial_points[1, j] - test_point[1]) / r[j] ** 3
     elif opt_layer == 11:
         for j in range(npoints):
-            output[j] = m_inv_4pi / r[j] / (trial_points[2, j] - test_point[2])
+            output[j] = m_inv_4pi * (trial_points[2, j] - test_point[2]) / r[j] ** 3
     return output
 
 
@@ -379,13 +379,13 @@ def stokes_single_layer_singular(
     # Q(x,y) options:
     elif opt_layer == 9:
         for j in range(npoints):
-            output[j] = m_inv_4pi / r[j] / (trial_points[0, j] - test_point[0, j])
+            output[j] = m_inv_4pi * (trial_points[0, j] - test_point[0, j]) / r[j] ** 3
     elif opt_layer == 10:
         for j in range(npoints):
-            output[j] = m_inv_4pi / r[j] / (trial_points[1, j] - test_point[1, j])
+            output[j] = m_inv_4pi * (trial_points[1, j] - test_point[1, j]) / r[j] ** 3
     elif opt_layer == 11:
         for j in range(npoints):
-            output[j] = m_inv_4pi / r[j] / (trial_points[2, j] - test_point[2, j])
+            output[j] = m_inv_4pi * (trial_points[2, j] - test_point[2, j]) / r[j] ** 3
     return output
 
 
